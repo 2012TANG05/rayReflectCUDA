@@ -1,0 +1,38 @@
+begin_<situation> Situation
+RxSet 2
+active
+vertical_line yes
+CVxLength 10
+CVyLength 10
+CVzLength 10
+AutoPatternScale
+ShowDescription yes
+CVsVisible no
+CVsThickness 3
+begin_<location> 
+begin_<reference> 
+cartesian
+longitude 87.0661
+latitude 32.5071
+visible no
+terrain
+end_<reference>
+side1 5219.97
+side2 5194.66
+spacing 736
+nVertices 1
+-2751.06 -3061.14 2
+end_<location>
+begin_<antenna> 
+antenna 0
+waveform 0
+rotation_x 11
+rotation_y 11
+rotation_z 11
+power 0
+end_<antenna>
+NoiseFigure 3
+pattern_show_arrow no
+pattern_show_as_sphere no
+generate_p2p yes
+end_<situation>

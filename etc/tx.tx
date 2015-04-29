@@ -1,0 +1,35 @@
+begin_<points> q
+TxSet 1
+active
+vertical_line yes
+cube_size 10.00000
+CVxLength 10.00000
+CVyLength 10.00000
+CVzLength 10.00000
+AutoPatternScale
+ShowDescription yes
+CVsVisible no
+CVsThickness 3
+begin_<location> 
+begin_<reference> 
+cartesian
+longitude 87.0661
+latitude 32.5071
+visible no
+terrain
+end_<reference>
+nVertices 1
+-135.101 2560.81 5280.87
+end_<location>
+begin_<antenna> 
+antenna 0
+waveform 0
+rotation_x 20.00000
+rotation_y 20.00000
+rotation_z 20.00000
+power 1000.00000
+end_<antenna>
+pattern_show_arrow no
+pattern_show_as_sphere no
+generate_p2p yes
+end_<points>

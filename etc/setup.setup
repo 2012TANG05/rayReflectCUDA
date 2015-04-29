@@ -1,0 +1,177 @@
+Format type:keyword version: 1.1.0
+begin_<project> 33334444
+begin_<globals> 
+offset_mode manual
+longitude 87.0661087362
+latitude 32.5070980757
+end_<globals>
+FirstAvailableStudyAreaNumber 1
+begin_<studyarea> studyarea 
+StudyAreaNumber 0
+active
+autoboundary 1
+begin_<model> 
+full3d
+raytracingmode sbr
+end_<model>
+begin_<boundary> 
+begin_<reference> 
+cartesian
+longitude 87.0661
+latitude 32.5071
+visible no
+terrain
+end_<reference>
+zmin 5040.2
+zmax 5580.2
+nVertices 4
+-4514.5674558976 -5009.1361821162 5083.8000000000
+-4514.5674558976 5009.1361821162 5269.2000000000
+4514.5674558976 -5009.1361821162 5233.7000000000
+4514.5674558976 5009.1361821162 5435.6000000000
+end_<boundary>
+end_<studyarea>
+begin_<feature> 
+feature 0
+terrain
+active
+filename C:\Users\mayunshan\Desktop\test\20150311\mnb.ter
+end_<feature>
+begin_<transmitter> 
+filename C:\Users\mayunshan\Desktop\test\20150311\20150311.tx
+FirstAvailableTxNumber 1
+end_<transmitter>
+begin_<receiver> 
+filename C:\Users\mayunshan\Desktop\test\20150311\20150311.rx
+FirstAvailableRxNumber 1
+end_<receiver>
+FirstAvailableCommSystemNumber 0
+begin_<antenna> Dipole antenna
+antenna 0
+type HalfWaveDipole
+waveform 0
+polarization Horizontal
+power_threshold -250.0000
+cable_loss 0.0000
+VSWR 1.00
+temperature 293.0
+component TotalGain
+gain_range 40.000000
+show_arrow no
+is_sphere no
+end_<antenna>
+begin_<Waveform> Sinusoid
+Sinusoid
+waveform 0
+CarrierFrequency 1000000000
+phase 0.000
+bandwidth 100000
+end_<Waveform>
+FirstAvailableFilterNumber 0
+begin_<requests> 
+cartesian
+sealevel
+local
+CalculationMode New
+CEF no
+DelaySpread no
+DirectionOfArrival no
+DirectionOfDeparture no
+ElectricFieldVsFrequency no
+ElectricFieldVsTime no
+FieldAnimation no
+MeanDirectionOfArrival no
+MeanDirectionOfDeparture no
+Paths no
+MeanTimeOfArrival no
+EField no
+EFieldTotal no
+FSPathloss no
+FSPower no
+Power no
+Pathloss no
+XPathloss no
+InputData no
+TimeOfArrival no
+ComplexImpulseResponse no
+PowerDelayProfile no
+TerrainProfile no
+PoyntingVector no
+C2I no
+StrongestTx no
+MaxRenderedPaths 25
+FieldAnimationIncrement 10
+FieldAnimationTimeAveraged no
+end_<requests>
+begin_<Scales> 
+begin_<NPaths> 
+AutoScaling 1
+DrawValues 0
+AutoUpdating 1
+Discrete 0
+UseGlobalOpacity 1
+ManualValuesSet 0
+ClampedHigh 1
+ClampedLow 1
+Alpha 1.000e+000
+ManualMin 0.000e+000
+ManualMax 1.000e+000
+TextColor 1.000 1.000 1.000
+Colors 6
+0.300 0.000 0.500
+0.000 0.000 1.000
+0.000 1.000 0.000
+1.000 1.000 0.000
+1.000 0.500 0.000
+1.000 0.000 0.000
+PartitionValues
+0
+end_<NPaths>
+begin_<BER> 
+AutoScaling 1
+DrawValues 0
+AutoUpdating 1
+Discrete 0
+UseGlobalOpacity 1
+ManualValuesSet 0
+ClampedHigh 1
+ClampedLow 1
+Alpha 1.000e+000
+ManualMin 0.000e+000
+ManualMax 1.000e+000
+TextColor 1.000 1.000 1.000
+Colors 6
+0.300 0.000 0.500
+0.000 0.000 1.000
+0.000 1.000 0.000
+1.000 1.000 0.000
+1.000 0.500 0.000
+1.000 0.000 0.000
+PartitionValues
+0
+end_<BER>
+begin_<Throughput> 
+AutoScaling 1
+DrawValues 0
+AutoUpdating 1
+Discrete 0
+UseGlobalOpacity 1
+ManualValuesSet 0
+ClampedHigh 1
+ClampedLow 1
+Alpha 1.000e+000
+ManualMin 0.000e+000
+ManualMax 1.000e+000
+TextColor 1.000 1.000 1.000
+Colors 6
+0.300 0.000 0.500
+0.000 0.000 1.000
+0.000 1.000 0.000
+1.000 1.000 0.000
+1.000 0.500 0.000
+1.000 0.000 0.000
+PartitionValues
+0
+end_<Throughput>
+end_<Scales>
+end_<project>
