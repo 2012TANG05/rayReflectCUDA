@@ -218,20 +218,20 @@ class transmitter
 {
     private:
         point location;
-        int thetaCnt, phiCnt;
+        float thetaCnt, phiCnt;
         vector<ray> rays;
     public:
         transmitter( point p=point(0,0,0), int theta=180, int phi=360)
         {
             location = p;
-            thetaCnt = theta;
-            phiCnt = phi;
-            for (int i = 0; i < thetaCnt; i ++)
+            thetaCnt = (float)theta;
+            phiCnt = (float)phi;
+            for (float i = 0; i < thetaCnt; i ++)
             {
-                for (int j = 0; j < phiCnt; j ++)
+                for (float j = 0; j < phiCnt; j ++)
                 {
-                    dirVector dv = dirVector((float)(sin((float)i/(float)thetaCnt*(float)PI/2)*cos((float)j/(float)phiCnt*(float)PI)),(float)(sin((float)i/(float)thetaCnt*(float)PI/2)*sin((float)j/(float)phiCnt*(float)PI)),(float)(cos((float)i/(float)thetaCnt*(float)PI/2)));
-                   // printf("x=%f,y=%f,z=%f\n", dv.getX(), dv.getY(), dv.getX());
+                    dirVector dv = dirVector(sin(i*PI/thetaCnt)*cos(j*2*PI/phiCnt),sin(i*PI/thetaCnt)*sin(j*2*PI/phiCnt),cos(i*PI/thetaCnt));
+//                    printf("%f %f %f \n\n", dv.getX(), dv.getY(), dv.getZ());
                     ray tempRay = ray(location, dv);
                     rays.push_back(tempRay);
                 }
@@ -271,7 +271,7 @@ class transmitter
                         tmpRet.push_back(tmpRay);
                     }
                 }
-                printf("tmpComputeCnt:%ld tmpSuccessCnt:%ld chazhi:%ld \n", tmpComputeCnt, tmpSuccessCnt, tmpComputeCnt - tmpSuccessCnt);
+              //  printf("tmpComputeCnt:%ld tmpSuccessCnt:%ld chazhi:%ld \n", tmpComputeCnt, tmpSuccessCnt, tmpComputeCnt - tmpSuccessCnt);
             }
 
             return tmpRet;
@@ -311,45 +311,45 @@ struct d_face
     float CZ;
 };
 
-__device__ float d_pointDianCheng(struct d_point A, struct d_point B)
+__host__ __device__ float d_pointDianCheng(struct d_point A, struct d_point B)
 {
     return A.X * B.X + A.Y * B.Y + A.Z * B.Z;
 };
 
-__device__ float d_dirVectorDianCheng(struct d_dirVector A, struct d_dirVector B)
+__host__ __device__ float d_dirVectorDianCheng(struct d_dirVector A, struct d_dirVector B)
 {
     return A.X * B.X + A.Y * B.Y + A.Z * B.Z;
 };
 
-__device__ float d_pointVectorDianCheng(struct d_point A, struct d_dirVector B)
+__host__ __device__ float d_pointVectorDianCheng(struct d_point A, struct d_dirVector B)
 {
     return A.X * B.X + A.Y * B.Y + A.Z * B.Z;
 };
 
-__device__ struct d_point d_pointChaCheng(struct d_point A, struct d_point B)
+__host__ __device__ struct d_point d_pointChaCheng(struct d_point A, struct d_point B)
 {
     struct d_point result = {A.Y * B.Z - B.Y * A.Z , A.Z * B.X - A.X * B.Z , A.X * B.Y - A.Y * B.X};
     return result;
 };
 
-__device__ struct d_dirVector d_dirVectorChaCheng(struct d_dirVector A, struct d_dirVector B)
+__host__ __device__ struct d_dirVector d_dirVectorChaCheng(struct d_dirVector A, struct d_dirVector B)
 {
     struct d_dirVector result = {A.Y * B.Z - B.Y * A.Z , A.Z * B.X - A.X * B.Z , A.X * B.Y - A.Y * B.X};
     return result;
 };
 
-__device__ float mag(d_dirVector vector)
+__host__ __device__ float mag(d_dirVector vector)
 {
     return sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
 }
 
-__device__ d_dirVector getReverseVector(d_dirVector vector)
+__host__ __device__ d_dirVector getReverseVector(d_dirVector vector)
 {
     d_dirVector retVector = {-vector.X , -vector.Y , -vector.Z};
     return retVector;
 }
 
-__device__ float getPhaseOfVector(d_dirVector firstVector , d_dirVector secondVector)
+__host__ __device__ float getPhaseOfVector(d_dirVector firstVector , d_dirVector secondVector)
 {
     float multipliedTemp, nTemp;
     multipliedTemp = d_dirVectorDianCheng(firstVector , secondVector);
@@ -367,7 +367,7 @@ __device__ float getPhaseOfVector(d_dirVector firstVector , d_dirVector secondVe
     return phase;
 }
 
-__device__ d_dirVector getRightRotationVector(d_dirVector thisVector , d_dirVector vector, float rotationAngle)
+__host__ __device__ d_dirVector getRightRotationVector(d_dirVector thisVector , d_dirVector vector, float rotationAngle)
 {
     float normalizations[4];
     float rotateparameters[9];
@@ -393,7 +393,7 @@ __device__ d_dirVector getRightRotationVector(d_dirVector thisVector , d_dirVect
     return retDirVector;
 }
 
-__device__ struct d_dirVector d_getNormalVector(struct d_face face)
+__host__ __device__ struct d_dirVector d_getNormalVector(struct d_face face)
 {
    struct d_point origin = {face.AX , face.AY , face.AZ};
    struct d_dirVector direction = {face.BX - face.AX , face.BY - face.AY , face.BZ - face.AZ};
@@ -416,7 +416,7 @@ __device__ struct d_dirVector d_getNormalVector(struct d_face face)
    }
 }
 
-__device__ bool pointIsOnFace(struct d_point origin, struct d_face face)
+__host__ __device__ bool pointIsOnFace(struct d_point origin, struct d_face face)
 {
     if ( (origin.X == face.AX && origin.Y == face.AY && origin.Z == face.AZ) || (origin.X == face.BX && origin.Y == face.BY && origin.Z == face.BZ) || (origin.X == face.CX && origin.Y == face.CY && origin.Z == face.CZ) )     
     {                                                                                                                                                      
@@ -449,7 +449,7 @@ __device__ bool pointIsOnFace(struct d_point origin, struct d_face face)
 }
 
     //得到经过一个三角面反射的反射射线
-__device__ struct d_ray getReflectRayByFace(d_ray ray, d_face face) 
+__host__ __device__ struct d_ray getReflectRayByFace(d_ray ray, d_face face) 
 {
     struct d_dirVector normalVector = d_getNormalVector(face);//获取法向量
 
@@ -487,12 +487,14 @@ __device__ struct d_ray getReflectRayByFace(d_ray ray, d_face face)
     }
 };
 
-__device__ d_point getIntersectionPointWithFace(d_ray ray , d_face face)
+
+//获取入射射线与三角面的交点
+__host__ __device__ d_point getIntersectionPointWithFace(d_ray ray , d_face face)
 {   
     d_dirVector normalVector = d_getNormalVector(face);
 
     float temp = fabs(d_dirVectorDianCheng(ray.direction , normalVector));
-    if (temp < 0.001)
+    if (temp < 0.0001)
     {
         d_point retPoint = {0 , 0 , 0};
         return retPoint;
@@ -517,7 +519,8 @@ __device__ d_point getIntersectionPointWithFace(d_ray ray , d_face face)
     }   
 };
 
-__device__ d_ray getRayOut(d_ray ray , d_face face)
+//获取入射射线经过三角面的反射射线
+__host__ __device__ d_ray getRayOut(d_ray ray , d_face face)
 {   
     d_dirVector normalVector = d_getNormalVector(face);
 
@@ -557,7 +560,7 @@ __device__ d_ray getRayOut(d_ray ray , d_face face)
 }
 
 
-template <int BLOCK_SIZE, int BLOCK_SIZE_FACE> __global__ void
+template <int BLOCK_SIZE, int BLOCK_SIZE_FACE, int GRID_SIZE> __global__ void
 rayReflectCUDA(int rays_size, int faces_size, float d_rays[], float d_faces[], float d_retRay[])
 {
     // Block index
@@ -568,55 +571,96 @@ rayReflectCUDA(int rays_size, int faces_size, float d_rays[], float d_faces[], f
     int tx = threadIdx.x;
     int ty = threadIdx.y;
 
-    int GRID_SIZE = 4;
+    int rate = BLOCK_SIZE / BLOCK_SIZE_FACE;
 
     //每个block的shared memory存储的三角面的长度
     int faceStep = (int)(BLOCK_SIZE_FACE * BLOCK_SIZE_FACE * 9);
 
     //每个thread所计算的ray在整个d_rays中的偏移
+    //注意在CUDA中的block和thread是按列组织的，尤其要注意！！！！！
+    //int shift = (GRID_SIZE * bx + by) * BLOCK_SIZE * BLOCK_SIZE + tx * BLOCK_SIZE + ty;
     int shift = (GRID_SIZE * by + bx) * BLOCK_SIZE * BLOCK_SIZE + ty * BLOCK_SIZE + tx;
 
+    //d_retRay[shift] =  shift;
+
     //提取每个thread需要计算的射线
-    struct d_point ray_point = {d_rays[shift] , d_rays[shift + 1] , d_rays[shift + 2]};
-    struct d_dirVector ray_dirVector = {d_rays[shift + 3] , d_rays[shift + 4] , d_rays[shift + 5]};
+    struct d_point ray_point = {d_rays[shift*6] , d_rays[shift*6 + 1] , d_rays[shift*6 + 2]};
+    struct d_dirVector ray_dirVector = {d_rays[shift*6 + 3] , d_rays[shift*6 + 4] , d_rays[shift*6 + 5]};
     struct d_ray each_ray = {ray_point , ray_dirVector};
 
     for ( int i = 0; i < faces_size; i += faceStep )
-    {   
+    { 
         __shared__ float blockFaces[(int)(BLOCK_SIZE_FACE * BLOCK_SIZE_FACE * 9)];
 
+/*
         if ((ty%2==0) && (tx%2==0))
         {
             for ( int j = 0; j < 9; j++ )
             {
-                blockFaces[(BLOCK_SIZE_FACE * ty / 2  + tx / 2) * 9 + j] = d_faces[i + (BLOCK_SIZE_FACE * ty / 2 + tx / 2) * 9 + j];
+                blockFaces[(BLOCK_SIZE_FACE * ty / 2 + tx / 2) * 9 + j] = d_faces[i + (BLOCK_SIZE_FACE * ty / 2 + tx / 2) * 9 + j];
+            }
+        }
+*/
+
+        if ((ty % rate == 0) && (tx % rate == 0))
+        {
+            for ( int j = 0; j < 9; j++ )
+            {
+                blockFaces[(BLOCK_SIZE_FACE * ty / rate + tx / rate) * 9 + j] = d_faces[i + (BLOCK_SIZE_FACE * ty / rate + tx / rate) * 9 + j];
             }
         }
 
         __syncthreads(); 
 
+        struct d_ray result;
+
         for ( int i = 0; i < BLOCK_SIZE_FACE*BLOCK_SIZE_FACE*9; i += 9)
         {
             struct d_face each_face = {blockFaces[i] , blockFaces[i + 1] , blockFaces[i + 2] , blockFaces[i + 3] , blockFaces[i + 4] , blockFaces[i + 5] , blockFaces[i + 6] , blockFaces[i + 7] , blockFaces[i + 8]};
 
-//           dd struct d_ray result = getReflectRayByFace(each_ray, each_face);
-            d_ray result = getRayOut(each_ray , each_face);           
+           // result = getReflectRayByFace(each_ray, each_face);
+           result = getRayOut(each_ray , each_face);           
           
-            d_retRay[shift] = result.origin.X;
-            d_retRay[shift+1] = result.origin.Y;
-            d_retRay[shift+2] = result.origin.Z;
-            d_retRay[shift+3] = result.direction.X;
-            d_retRay[shift+4] = result.direction.Y;
-            d_retRay[shift+5] = result.direction.Z;
-        }
-       
-        __syncthreads();
+            d_retRay[shift*6] = result.origin.X;
+            d_retRay[shift*6+1] = result.origin.Y;
+            d_retRay[shift*6+2] = result.origin.Z;
+            d_retRay[shift*6+3] = result.direction.X;
+            d_retRay[shift*6+4] = result.direction.Y;
+            d_retRay[shift*6+5] = result.direction.Z;
 
+        }
     }
+/*
+            d_retRay[shift*6]   = each_ray.origin.X;
+            d_retRay[shift*6+1] = each_ray.origin.Y;
+            d_retRay[shift*6+2] = each_ray.origin.Z;
+            d_retRay[shift*6+3] = each_ray.direction.X;
+            d_retRay[shift*6+4] = each_ray.direction.Y;
+            d_retRay[shift*6+5] = each_ray.direction.Z;
+*/
+/*
+            d_retRay[shift*6]   = d_rays[shift*6]; 
+            d_retRay[shift*6+1] = d_rays[shift*6+1]; 
+            d_retRay[shift*6+2] = d_rays[shift*6+2]; 
+            d_retRay[shift*6+3] = d_rays[shift*6+3];
+            d_retRay[shift*6+4] = d_rays[shift*6+4];
+            d_retRay[shift*6+5] = d_rays[shift*6+5];
+*/
+/*
+         if (shift*6 + 6 < 27648 * 9){
+            d_retRay[shift*6]   = d_faces[shift*6]; 
+            d_retRay[shift*6+1] = d_faces[shift*6+1]; 
+            d_retRay[shift*6+2] = d_faces[shift*6+2]; 
+            d_retRay[shift*6+3] = d_faces[shift*6+3];
+            d_retRay[shift*6+4] = d_faces[shift*6+4];
+            d_retRay[shift*6+5] = d_faces[shift*6+5];
+         }
+*/
+        __syncthreads();
 }
 
 //在GPU上运行
-int rayReflectGPU(int argc, char **argv)
+int rayReflectGPU(int argc, char **argv, int theta, int phi , int version)
 {
 
     string pathTx = "./etc/tx.tx";string pathTer = "./etc/ter.ter";
@@ -651,7 +695,7 @@ int rayReflectGPU(int argc, char **argv)
                 float x = atof(line.substr(0,8).c_str());
                 float y = atof(line.substr(9,7).c_str());
                 float z = atof(line.substr(17,7).c_str());
-                tx = transmitter(point(x,y,z),256,256);
+                tx = transmitter(point(x,y,z),theta,phi);
                 flag = 0;
             }
         }
@@ -808,6 +852,8 @@ int rayReflectGPU(int argc, char **argv)
             h_rays[i+4] = itRay->getDirection().getY();
             h_rays[i+5] = itRay->getDirection().getZ();
 
+//            printf("%f %f %f %f %f %f  \n", h_rays[i] , h_rays[i+1] , h_rays[i+2] , h_rays[i+3] , h_rays[i+4] , h_rays[i+5]);
+
             i += 6;
         }
 
@@ -825,6 +871,8 @@ int rayReflectGPU(int argc, char **argv)
             h_faces[i+6] = itFace->getC().getX();
             h_faces[i+7] = itFace->getC().getY();
             h_faces[i+8] = itFace->getC().getZ();
+
+       //     printf("%f %f %f %f %f %f %f %f %f \n\n", h_faces[i] , h_faces[i+1] , h_faces[i+2] , h_faces[i+3] , h_faces[i+4] , h_faces[i+5] , h_faces[i+6] , h_faces[i+7] , h_faces[i+8]);
 
             i += 9;
         }
@@ -875,6 +923,12 @@ int rayReflectGPU(int argc, char **argv)
             printf("cudaMemcpy (d_rays, h_rays) returned error code %d, line(%d)\n", error, __LINE__);
             exit(EXIT_FAILURE); 
         }
+/*
+        for (int i = 0 ; i < mem_size_rays / sizeof(float); i += 6)
+        {
+            printf("   point: %f %f %f ;  %f %f %f \n", h_rays[i] , h_rays[i+1] , h_rays[i+2] , h_rays[i+3] , h_rays[i+4] , h_rays[i+5]);
+        }
+*/
 
         error = cudaMemcpy(d_faces, h_faces, mem_size_faces, cudaMemcpyHostToDevice);
 
@@ -883,14 +937,12 @@ int rayReflectGPU(int argc, char **argv)
             printf("cudaMemcpy (d_faces, h_faces) returned error code %d, line(%d)\n", error, __LINE__);
             exit(EXIT_FAILURE);
         }
-
-        //Setup execution parameters
-        int block_size = 32;
-        int gridX = 4;
-        int gridY = 4;
-
-        dim3 threads(block_size, block_size);
-        dim3 grid(gridX, gridY);
+/*
+        for (int i = 0 ; i < mem_size_faces / sizeof(float); i += 6)
+        {
+            printf("   point: %f %f %f ;  %f %f %f \n", h_faces[i] , h_faces[i+1] , h_faces[i+2] , h_faces[i+3] , h_faces[i+4] , h_faces[i+5]);
+        }
+*/
 
         // Allocate CUDA events that we'll use for timing
         cudaEvent_t start;
@@ -920,8 +972,66 @@ int rayReflectGPU(int argc, char **argv)
             exit(EXIT_FAILURE);                                                                                                                                        
         }
 
+        //Setup execution parameters
+        int block_size;
+        int grid_size;
+
+        if (version == 0 || version == 3 || version == 5)
+        {
+            block_size = 32;
+            grid_size = 8;
+        }
+        if (version == 1 || version == 4 || version == 6 || version == 8)
+        {
+            block_size = 16;
+            grid_size = 16;
+        }
+        if (version == 2 || version == 7)
+        {
+            block_size = 8;
+            grid_size = 32;
+        }
+
+        dim3 threads(block_size, block_size);
+        dim3 grid(grid_size, grid_size);
+
         ///////////////开始进入kernel计算
-        rayReflectCUDA<32,16><<< grid, threads >>>(raysCnt*6, facesCnt*9, d_rays, d_faces, d_resultRays);
+        if (version == 0)
+        {
+            rayReflectCUDA<32, 16, 8><<< grid, threads >>>(raysCnt*6, facesCnt*9, d_rays, d_faces, d_resultRays);
+        }
+        if (version == 1)
+        {
+            rayReflectCUDA<16, 16, 16><<< grid, threads >>>(raysCnt*6, facesCnt*9, d_rays, d_faces, d_resultRays);
+        }
+        if (version == 2)
+        {
+            rayReflectCUDA<8, 8, 32><<< grid, threads >>>(raysCnt*6, facesCnt*9, d_rays, d_faces, d_resultRays);
+        }
+        if (version == 3)
+        {
+            rayReflectCUDA<32, 8, 8><<< grid, threads >>>(raysCnt*6, facesCnt*9, d_rays, d_faces, d_resultRays);
+        }
+        if (version == 4)
+        {
+            rayReflectCUDA<16, 8, 16><<< grid, threads >>>(raysCnt*6, facesCnt*9, d_rays, d_faces, d_resultRays);
+        }
+        if (version == 5)
+        {
+            rayReflectCUDA<32, 4, 8><<< grid, threads >>>(raysCnt*6, facesCnt*9, d_rays, d_faces, d_resultRays);
+        }
+        if (version == 6)
+        {
+            rayReflectCUDA<16, 4, 16><<< grid, threads >>>(raysCnt*6, facesCnt*9, d_rays, d_faces, d_resultRays);
+        }
+        if (version == 7)
+        {
+            rayReflectCUDA<8, 4, 32><<< grid, threads >>>(raysCnt*6, facesCnt*9, d_rays, d_faces, d_resultRays);
+        }
+        if (version == 8)
+        {
+            rayReflectCUDA<16, 2, 16><<< grid, threads >>>(raysCnt*6, facesCnt*9, d_rays, d_faces, d_resultRays);
+        }
 
         cudaDeviceSynchronize();
 
@@ -965,7 +1075,7 @@ int rayReflectGPU(int argc, char **argv)
 
         for (int i = 0 ; i < mem_size_rays / sizeof(float); i += 6)
         {
-            printf("   point: %.2f %.2f %.2f ;  %.2f %.2f %.2f \n", h_resultRays[i] , h_resultRays[i+1] , h_resultRays[i+2] , h_resultRays[i+3] , h_resultRays[i+4] , h_resultRays[i+5]);
+            printf("   point: %f %f %f ;  %f %f %f \n", h_resultRays[i] , h_resultRays[i+1] , h_resultRays[i+2] , h_resultRays[i+3] , h_resultRays[i+4] , h_resultRays[i+5]);
         }
 
         free(h_rays);
@@ -983,7 +1093,7 @@ int rayReflectGPU(int argc, char **argv)
 }
 
 //在CPU运行
-int rayReflectCPU(int argc, char **argv)
+int rayReflectCPU(int argc, char **argv, int theta, int phi)
 {
 
     string pathTx = "./etc/tx.tx";
@@ -1019,7 +1129,8 @@ int rayReflectCPU(int argc, char **argv)
                 float x = atof(line.substr(0,8).c_str());
                 float y = atof(line.substr(9,7).c_str());
                 float z = atof(line.substr(17,7).c_str());
-                tx = transmitter(point(x,y,z),180,360);
+               // tx = transmitter(point(x,y,z),180,360);
+                tx = transmitter(point(x,y,z),theta,phi);
                 flag = 0;
             }
         }
@@ -1138,14 +1249,119 @@ int rayReflectCPU(int argc, char **argv)
 
         printf("########read ter config file OK######## \n\n");
         printf("    There are %d triangle face on the map \n\n", (int)faces.size());
-        
+
+        int raysCnt = tx.getRaysCnt();
+        int facesCnt = (int)faces.size();
+
+        unsigned int mem_size_rays = (raysCnt * 6) * sizeof(float);
+        unsigned int mem_size_faces = (facesCnt * 9) * sizeof(float);
+
+        float *h_rays = (float *)malloc(mem_size_rays);
+
+        if (h_rays == NULL)
+        {
+            fprintf(stderr, "Failed to allocate host vector h_rays ! \n");
+            exit(EXIT_FAILURE);
+        }
+
+        float *h_faces = (float *)malloc(mem_size_faces);
+
+        if (h_faces == NULL)
+        {
+            fprintf(stderr, "Failed to allocate host vector h_faces ! \n");
+            exit(EXIT_FAILURE);
+        }
+
+        //Allocate host memory
+        int i = 0;
+        vector<ray> rrrays = tx.getRays();
+        for (vector<ray>::iterator itRay = rrrays.begin(); itRay < rrrays.end(); itRay ++)
+        {
+            h_rays[i]   = itRay->getOrigin().getX();
+            h_rays[i+1] = itRay->getOrigin().getY();
+            h_rays[i+2] = itRay->getOrigin().getZ();
+
+            h_rays[i+3] = itRay->getDirection().getX();
+            h_rays[i+4] = itRay->getDirection().getY();
+            h_rays[i+5] = itRay->getDirection().getZ();
+
+//            printf("%f %f %f %f %f %f  \n", h_rays[i] , h_rays[i+1] , h_rays[i+2] , h_rays[i+3] , h_rays[i+4] , h_rays[i+5]);
+
+            i += 6;
+        }
+
+        i = 0;
+        for (vector<face>::iterator itFace = faces.begin(); itFace < faces.end(); itFace ++)
+        {
+            h_faces[i]   = itFace->getA().getX();
+            h_faces[i+1] = itFace->getA().getY();
+            h_faces[i+2] = itFace->getA().getZ();
+
+            h_faces[i+3] = itFace->getB().getX();
+            h_faces[i+4] = itFace->getB().getY();
+            h_faces[i+5] = itFace->getB().getZ();
+
+            h_faces[i+6] = itFace->getC().getX();
+            h_faces[i+7] = itFace->getC().getY();
+            h_faces[i+8] = itFace->getC().getZ();
+
+       //     printf("%f %f %f %f %f %f %f %f %f \n\n", h_faces[i] , h_faces[i+1] , h_faces[i+2] , h_faces[i+3] , h_faces[i+4] , h_faces[i+5] , h_faces[i+6] , h_faces[i+7] , h_faces[i+8]);
+
+            i += 9;
+        }
+
+        float *h_resultRays = (float *)malloc(mem_size_rays);
+
+        if (h_resultRays == NULL)
+        {
+            fprintf(stderr, "Failed to allocate host vector resultRays ! \n");
+            exit(EXIT_FAILURE);
+        }
+
         printf("########compute begin########\n\n");
         clock_t start,end;
         start = clock();
-        vector<ray> result = tx.traverseFaces(faces);
+
+        // vector<ray> result = tx.traverseFaces(faces);
+
+        int rays_size = raysCnt * 6;
+        int faces_size = facesCnt * 9;       
+
+        for ( int i = 0; i < rays_size; i += 6 )
+        {
+            struct d_point ray_point = {h_rays[i] , h_rays[i + 1] , h_rays[i + 2]};
+            struct d_dirVector ray_dirVector = {h_rays[i + 3] , h_rays[i + 4] , h_rays[i + 5]};
+            struct d_ray each_ray = {ray_point , ray_dirVector};
+
+            struct d_ray result;
+
+            for ( int j = 0; j < faces_size; j += 9 )
+            {
+                struct d_face each_face = {h_faces[j] , h_faces[j + 1] , h_faces[j + 2] , h_faces[j + 3] , h_faces[j + 4] , h_faces[j + 5] , h_faces[j + 6] , h_faces[j + 7] , h_faces[j + 8]};
+
+                result = getRayOut(each_ray , each_face);           
+            }
+
+            h_resultRays[i] = result.origin.X;
+            h_resultRays[i+1] = result.origin.Y;
+            h_resultRays[i+2] = result.origin.Z;
+            h_resultRays[i+3] = result.direction.X;
+            h_resultRays[i+4] = result.direction.Y;
+            h_resultRays[i+5] = result.direction.Z;
+        }
+
         end = clock();
         float useTime = (end - start)/1000;
         printf("    use %.2f (ms)\n\n", useTime);
+
+        for ( int i = 0; i < rays_size; i += 6)
+        {
+    //        printf("   point: %f %f %f ;  %f %f %f \n", h_resultRays[i] , h_resultRays[i+1] , h_resultRays[i+2] , h_resultRays[i+3] , h_resultRays[i+4] , h_resultRays[i+5]);
+        }
+
+        free(h_rays);
+        free(h_faces);
+        free(h_resultRays);
     }
 
     confTx.close();
